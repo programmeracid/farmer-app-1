@@ -1,29 +1,37 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Alert, Button, StyleSheet, TextInput, View } from "react-native";
 import CameraCapture from "./components/CameraCapture";
-import { login } from "./services/authService"; // your login service
+import LanguageScreen from "./pages/LanguageScreen"; // new page
+import { login } from "./services/authService";
 
 export default function Index() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [langChosen, setLangChosen] = useState(false);
+  const { t, i18n } = useTranslation();
 
-  // Load token from storage when app starts
+  // Load token + language when app starts
   useEffect(() => {
-    const loadToken = async () => {
+    const init = async () => {
       const savedToken = await AsyncStorage.getItem("token");
+      const savedLang = await AsyncStorage.getItem("appLanguage");
       if (savedToken) setToken(savedToken);
+      if (savedLang) {
+        await i18n.changeLanguage(savedLang);
+        setLangChosen(true);
+      }
       setLoading(false);
     };
-    loadToken();
+    init();
   }, []);
 
   const handleLogin = async () => {
     try {
       const data = await login(username, password);
-       // call your auth service
       setToken(data.token);
       await AsyncStorage.setItem("token", data.token);
     } catch (err: any) {
@@ -36,9 +44,14 @@ export default function Index() {
     setToken(null);
   };
 
-  if (loading) return null; // or a splash/loading screen
+  if (loading) return null; // splash screen placeholder
 
-  // Show login form if no token
+  // 🔹 Step 1: No language chosen → show language screen
+  if (!langChosen) {
+    return <LanguageScreen onLanguageSelected={() => setLangChosen(true)} />;
+  }
+
+  // 🔹 Step 2: Language chosen but no token → show login form
   if (!token) {
     return (
       <View style={styles.container}>
@@ -55,13 +68,22 @@ export default function Index() {
           onChangeText={setPassword}
           secureTextEntry
         />
-        <Button title="Login" onPress={handleLogin} />
+        <Button title={t("login")} onPress={handleLogin} />
       </View>
     );
   }
 
-  // Logged in → show camera
-  return <CameraCapture />;
+  // 🔹 Step 3: Logged in → show camera
+  // 🔹 Step 3: Logged in → show camera with logout + change language
+    return (
+    <View style={{ flex: 1 }}>
+        <CameraCapture />
+        <View style={{ padding: 20 }}>
+        <Button title={t("logout")} onPress={handleLogout} />
+        <Button title={t("change_language")} onPress={() => setLangChosen(false)} />
+        </View>
+    </View>
+    );
 }
 
 const styles = StyleSheet.create({

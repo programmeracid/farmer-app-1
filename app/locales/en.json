@@ -1,0 +1,10 @@
+{
+  "login": "Login",
+  "register": "Register",
+  "take_photo": "Take Photo",
+  "upload": "Upload",
+  "logout": "Logout",
+  "change_language": "भाषा बदलें",
+  "pick_from_gallery": "गैलरी से चुनें",
+  "retake": "Retake"
+}

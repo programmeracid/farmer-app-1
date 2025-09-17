@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
 import { register } from "../services/authService";
 
 export default function RegisterScreen({ navigation }: any) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const {t } = useTranslation();
 
   const handleRegister = async () => {
     try {
@@ -32,7 +34,7 @@ export default function RegisterScreen({ navigation }: any) {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Register" onPress={handleRegister} />
+      <Button title={t("Register")} onPress={handleRegister} />
       <Text style={styles.link} onPress={() => navigation.navigate("Login")}>
         Already have an account? Login
       </Text>

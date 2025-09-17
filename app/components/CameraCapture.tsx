@@ -1,6 +1,7 @@
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import React, { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button, StyleSheet, Text, View } from "react-native";
 import Preview from "./Preview";
 
@@ -8,6 +9,7 @@ export default function CameraCapture() {
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraView | null>(null);
   const [photoUri, setPhotoUri] = useState<string | null>(null);
+  const {t} = useTranslation();
 
   if (!permission) return null;
   if (!permission.granted) {
@@ -42,8 +44,8 @@ export default function CameraCapture() {
         <>
           <CameraView ref={cameraRef} style={styles.camera} facing="back" />
           <View style={styles.buttonOverlay}>
-            <Button title="Take Photo" onPress={takePhoto} />
-            <Button title="Pick from Gallery" onPress={pickImage} />
+            <Button title={t("take_photo")} onPress={takePhoto} />
+            <Button title={t("pick_from_gallery")} onPress={pickImage} />
           </View>
         </>
       ) : (

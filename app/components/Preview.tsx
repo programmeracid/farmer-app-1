@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Alert, Button, Image, StyleSheet, View } from "react-native";
 import UploadButton from "./UploadButton";
 
@@ -9,7 +10,10 @@ interface PreviewProps {
 }
 
 export default function Preview({ photoUri, onRetake }: PreviewProps) {
-  const handleLogout = async () => {
+  
+    const {t} = useTranslation();
+
+    const handleLogout = async () => {
     try {
       const token = await AsyncStorage.getItem("token");
       if (token) {
@@ -32,10 +36,10 @@ export default function Preview({ photoUri, onRetake }: PreviewProps) {
   return (
     <View style={styles.container}>
       <Image source={{ uri: photoUri }} style={styles.image} />
-      <Button title="Retake" onPress={onRetake} />
+      <Button title={t("retake")} onPress={onRetake} />
       <UploadButton imageUri={photoUri} />
       <View style={{ marginTop: 10 }}>
-        <Button title="Logout" color="red" onPress={handleLogout} />
+        <Button title={t("logout")} color="red" onPress={handleLogout} />
       </View>
     </View>
   );
