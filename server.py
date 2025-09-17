@@ -5,6 +5,7 @@ import os
 from datetime import datetime
 from auth import hash_password, verify_password, create_jwt_token, decode_jwt_token
 import db
+from inference import predict_breed
 
 app = FastAPI()
 
@@ -70,11 +71,13 @@ async def upload_image(file: UploadFile = File(...), authorization: str = Header
     with open(file_path, "wb") as f:
         contents = await file.read()
         f.write(contents)
+    
+    pred_class, confidence = predict_breed(file_path)
+
 
     return {
-        "filename": filename,
-        "size": len(contents),
-        "message": "Image saved successfully!"
+        "pred_class" : pred_class,
+        "confidence" : confidence
     }
 
 @app.post("/logout")
